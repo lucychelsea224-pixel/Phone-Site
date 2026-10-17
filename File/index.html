@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MARVELLOUS GLOBAL INTERNATIONAL – Phone Repair</title>
+<style>
+:root{--bg:#fff;--fg:#14202e;--mut:#5b6b7c;--card:#f3f6fa;--bd:#dde4ec;--acc:#0a66ff;--g:#12a150;--hero:#0b1f3a}
+@media(prefers-color-scheme:dark){:root{--bg:#0e141b;--fg:#e8eef5;--mut:#9aa9b9;--card:#17202b;--bd:#26323f;--acc:#4d8dff;--hero:#08111d}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--fg);line-height:1.5}
+.w{max-width:1000px;margin:0 auto;padding:0 18px}
+header{background:var(--hero);color:#fff}
+nav{display:flex;justify-content:space-between;align-items:center;padding:14px 0;gap:10px;flex-wrap:wrap}
+.logo{font-weight:800;font-size:15px}.logo span{color:#5aa2ff}
+nav a{color:#cfe0f5;text-decoration:none;margin-left:16px;font-size:14px}
+.hero{padding:44px 0 56px}h1{font-size:clamp(28px,6vw,46px);line-height:1.1;margin:0 0 12px}
+.hero p{color:#cfe0f5;max-width:560px;margin:0 0 22px}
+.btn{display:inline-block;padding:12px 20px;border-radius:10px;border:0;font-weight:700;font-size:15px;text-decoration:none;margin:0 8px 8px 0;color:#fff;background:var(--acc)}
+.btn.g{background:var(--g)}.btn.o{background:transparent;border:1px solid var(--bd);color:var(--fg)}
+section{padding:38px 0}h2{margin:0 0 6px;font-size:26px}.sub{color:var(--mut);margin:0 0 20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px}
+.ic{font-size:34px}.card img{width:100%;height:140px;object-fit:cover;border-radius:10px}
+.card h3{margin:6px 0 4px;font-size:17px}.card p{margin:0;color:var(--mut);font-size:14px}
+.pr{font-weight:800;color:var(--acc);margin-top:8px}.tag{font-size:12px;color:var(--mut);text-transform:uppercase}
+.contact{background:var(--card);border-top:1px solid var(--bd)}
+footer{padding:20px 0;color:var(--mut);font-size:13px;text-align:center}
+</style></head><body>
+<header><div class="w"><nav><div class="logo">MARVELLOUS <span>GLOBAL</span> INTERNATIONAL</div>
+<div><a href="#services">Services</a><a href="#products">Products</a><a href="#contact">Contact</a></div></nav>
+<div class="hero"><h1>Fast, reliable phone repair you can trust.</h1>
+<p>Screens, batteries, charging ports and more, repaired by experts with quality parts and a warranty.</p>
+<a class="btn g" id="hwa" target="_blank" rel="noopener">💬 Chat on WhatsApp</a><a class="btn" id="hcall">📞 Call Now</a></div></div></header>
+<section id="services"><div class="w"><h2>Our Repair Services</h2><p class="sub">Most repairs done while you wait.</p><div class="grid">
+<div class="card"><div class="ic">📱</div><h3>Screen Replacement</h3><p>Cracked or dead display fixed same day.</p></div>
+<div class="card"><div class="ic">🔋</div><h3>Battery Replacement</h3><p>Restore all-day battery life.</p></div>
+<div class="card"><div class="ic">🔌</div><h3>Charging Port Repair</h3><p>Slow or not charging? We fix it.</p></div>
+<div class="card"><div class="ic">💧</div><h3>Water Damage</h3><p>Cleaning and board-level recovery.</p></div>
+<div class="card"><div class="ic">⚙️</div><h3>Software & Unlocking</h3><p>Updates, flashing, data recovery.</p></div>
+<div class="card"><div class="ic">📷</div><h3>Camera & Speaker</h3><p>Mic, speaker and camera repairs.</p></div></div></div></section>
+<section id="products" style="padding-top:0"><div class="w"><h2>Products We Sell</h2><p class="sub">Phones, parts and accessories available now.</p>
+<div class="grid" id="pg"><p class="sub">Loading...</p></div></div></section>
+<section id="contact" class="contact"><div class="w"><h2>Contact Us</h2><p class="sub">Tap to call or message us any time.</p>
+<a class="btn" id="cc"></a><a class="btn g" id="cw" target="_blank" rel="noopener">💬 WhatsApp</a><a class="btn o" id="ce"></a>
+<p class="sub" id="ca"></p></div></section>
+<footer>© <span id="yr"></span> MARVELLOUS GLOBAL INTERNATIONAL. All rights reserved.</footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script>
+const $=i=>document.getElementById(i);$('yr').textContent=new Date().getFullYear();
+const E=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function setContact(s){const d=String(s.whatsapp).replace(/\D/g,'');
+ const wa=m=>'https://wa.me/'+d+'?text='+encodeURIComponent(m);
+ $('hwa').href=wa('Hello Marvellous Global International, I need a phone repair.');$('cw').href=$('hwa').href;
+ $('hcall').href=$('cc').href='tel:'+s.phone;$('cc').textContent='📞 '+s.phone;
+ $('ce').href='mailto:'+s.email;$('ce').textContent='✉️ '+s.email;$('ca').textContent='📍 '+s.address;window._d=d}
+setContact({phone:'',whatsapp:'',email:'',address:''});
+(async()=>{try{
+ const db=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY);
+ const [s,p]=await Promise.all([db.from('settings').select('*').eq('id',1).single(),db.from('products').select('*').order('created_at',{ascending:false})]);
+ if(s.data)setContact(s.data);
+ const list=(p.data||[]);
+ $('pg').innerHTML=list.length?list.map(x=>`<div class="card">${x.image_url?`<img src="${E(x.image_url)}" alt="${E(x.name)}" loading="lazy">`:`<div class="ic">${E(x.emoji||'📦')}</div>`}
+ <div class="tag">${E(x.category)}${x.in_stock?'':' · Out of stock'}</div><h3>${E(x.name)}</h3><p>${E(x.description)}</p><div class="pr">${E(x.price)}</div>
+ <a class="btn g" style="margin:10px 0 0;padding:8px 14px;font-size:13px" target="_blank" rel="noopener" href="https://wa.me/${window._d}?text=${encodeURIComponent('Hello, I am interested in: '+x.name)}">Ask on WhatsApp</a></div>`).join(''):'<p class="sub">No products yet.</p>';
+}catch(e){$('pg').innerHTML='<p class="sub">Products could not be loaded.</p>'}})();
+</script></body></html>
