@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Admin – MARVELLOUS GLOBAL INTERNATIONAL</title>
+<style>
+:root{--bg:#fff;--fg:#14202e;--mut:#5b6b7c;--card:#f3f6fa;--bd:#dde4ec;--acc:#0a66ff}
+@media(prefers-color-scheme:dark){:root{--bg:#0e141b;--fg:#e8eef5;--mut:#9aa9b9;--card:#17202b;--bd:#26323f;--acc:#4d8dff}}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:var(--bg);color:var(--fg)}
+.w{max-width:760px;margin:0 auto;padding:18px}
+input,textarea{width:100%;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--fg);font:inherit;margin:4px 0 10px}
+label{font-size:13px;color:var(--mut)}.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:16px}
+button{padding:10px 16px;border:0;border-radius:8px;background:var(--acc);color:#fff;font-weight:700;cursor:pointer;margin-right:6px}
+button.o{background:transparent;border:1px solid var(--bd);color:var(--fg)}button.r{background:#d63a3a}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.m{font-size:13px;color:var(--mut)}
+</style></head><body><div class="w">
+<div id="login" class="card" style="display:none"><h2>Admin Login</h2>
+<label>Email</label><input id="em" type="email"><label>Password</label><input id="pw" type="password">
+<button id="li">Sign in</button> <span class="m" id="lm"></span></div>
+<div id="dash" style="display:none">
+<div class="row"><h2 style="margin:0">Admin Panel</h2><span><a href="/" style="color:var(--acc);margin-right:12px">View site</a><button class="o" id="lo">Log out</button></span></div>
+<div class="card"><h3>Contact details</h3>
+<label>Phone (with country code)</label><input id="sp"><label>WhatsApp (digits only, country code)</label><input id="sw">
+<label>Email</label><input id="se"><label>Address</label><input id="sa">
+<button id="ss">Save contact</button><span class="m" id="sm"></span></div>
+<div class="card"><h3 id="ft">Add gadget</h3><input type="hidden" id="ix">
+<div class="two"><div><label>Name</label><input id="pn"></div><div><label>Category</label><input id="pc" placeholder="Phones, Parts, Accessories"></div>
+<div><label>Emoji icon</label><input id="pe" placeholder="📱"></div><div><label>Price</label><input id="pr" placeholder="₦50,000"></div></div>
+<label>Image URL (optional, overrides emoji)</label><input id="pi"><label>Description</label><textarea id="pd" rows="2"></textarea>
+<label><input type="checkbox" id="pk" checked style="width:auto"> In stock</label><br>
+<button id="pa">Save gadget</button><button class="o" id="pcn">Clear</button><span class="m" id="pm"></span></div>
+<div class="card"><h3>Your gadgets</h3><div id="pl"></div></div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="/config.js"></script>
+<script>
+const $=i=>document.getElementById(i),db=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY);
+const E=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let P=[];
+async function show(){const{data:{session}}=await db.auth.getSession();
+ $('login').style.display=session?'none':'block';$('dash').style.display=session?'block':'none';if(session)load()}
+$('li').onclick=async()=>{$('lm').textContent='Signing in...';
+ const{error}=await db.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value});
+ if(error)$('lm').textContent=error.message;else show()};
+$('lo').onclick=async()=>{await db.auth.signOut();show()};
+async function load(){
+ const s=(await db.from('settings').select('*').eq('id',1).single()).data||{};
+ $('sp').value=s.phone||'';$('sw').value=s.whatsapp||'';$('se').value=s.email||'';$('sa').value=s.address||'';
+ P=(await db.from('products').select('*').order('created_at',{ascending:false})).data||[];
+ $('pl').innerHTML=P.map((x,i)=>`<div class="row"><span>${E(x.emoji)} <b>${E(x.name)}</b> · ${E(x.price)}${x.in_stock?'':' (out of stock)'}</span>
+ <span><button class="o" data-e="${i}">Edit</button><button class="r" data-d="${x.id}">Delete</button></span></div>`).join('')||'<p class="m">No gadgets yet.</p>';
+ document.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{const x=P[b.dataset.e];
+  $('ix').value=x.id;$('pn').value=x.name;$('pc').value=x.category||'';$('pe').value=x.emoji||'';$('pr').value=x.price||'';
+  $('pi').value=x.image_url||'';$('pd').value=x.description||'';$('pk').checked=x.in_stock;$('ft').textContent='Edit gadget';scrollTo(0,0)});
+ document.querySelectorAll('[data-d]').forEach(b=>b.onclick=async()=>{if(confirm('Delete this gadget?')){await db.from('products').delete().eq('id',b.dataset.d);load()}})}
+function clr(){['ix','pn','pc','pe','pr','pi','pd'].forEach(i=>$(i).value='');$('pk').checked=true;$('ft').textContent='Add gadget'}
+$('pcn').onclick=clr;
+$('pa').onclick=async()=>{if(!$('pn').value.trim())return;
+ const o={name:$('pn').value.trim(),category:$('pc').value.trim(),emoji:$('pe').value.trim(),price:$('pr').value.trim(),image_url:$('pi').value.trim(),description:$('pd').value.trim(),in_stock:$('pk').checked};
+ const id=$('ix').value;const{error}=id?await db.from('products').update(o).eq('id',id):await db.from('products').insert(o);
+ $('pm').textContent=error?error.message:'Saved ✓';if(!error){clr();load()}};
+$('ss').onclick=async()=>{const{error}=await db.from('settings').upsert({id:1,phone:$('sp').value.trim(),whatsapp:$('sw').value.trim(),email:$('se').value.trim(),address:$('sa').value.trim()});
+ $('sm').textContent=error?error.message:'Saved ✓'};
+show();
+</script></body></html>
